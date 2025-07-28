@@ -1,6 +1,5 @@
-package com.sobolev.bank_card_app_alfa_25.ui.theme
+package com.sobolev.bank_card_app_alfa_25.presentation.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

@@ -1,4 +1,4 @@
-package com.sobolev.bank_card_app_alfa_25.ui.theme
+package com.sobolev.bank_card_app_alfa_25.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
