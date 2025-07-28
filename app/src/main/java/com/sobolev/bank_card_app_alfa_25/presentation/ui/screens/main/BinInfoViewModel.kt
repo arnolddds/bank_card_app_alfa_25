@@ -1,4 +1,4 @@
-package com.sobolev.bank_card_app_alfa_25.presentation.ui.screens.main_screen
+package com.sobolev.bank_card_app_alfa_25.presentation.ui.screens.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
