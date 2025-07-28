@@ -8,8 +8,9 @@ import com.sobolev.bank_card_app_alfa_25.domain.entitites.BinInfo
 import com.sobolev.bank_card_app_alfa_25.domain.repository.BinInfoRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class BinInfoRepositoryImpl(
+class BinInfoRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
     private val binInfoDao: BinInfoDao
 ) : BinInfoRepository {
