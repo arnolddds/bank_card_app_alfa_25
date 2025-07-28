@@ -1,13 +1,12 @@
-package com.sobolev.bank_card_app_alfa_25
+package com.sobolev.bank_card_app_alfa_25.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.sobolev.bank_card_app_alfa_25.presentation.ui.screens.main.BinInfoScreen
+import com.sobolev.bank_card_app_alfa_25.presentation.navigation.NavGraph
 import com.sobolev.bank_card_app_alfa_25.presentation.ui.theme.Bank_card_app_alfa_25Theme
 import dagger.hilt.android.AndroidEntryPoint
-
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -16,7 +15,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             Bank_card_app_alfa_25Theme {
-                BinInfoScreen(navigateToHistory = {})
+                NavGraph()
             }
         }
     }
