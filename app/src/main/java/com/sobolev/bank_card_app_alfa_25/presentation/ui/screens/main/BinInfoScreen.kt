@@ -10,34 +10,52 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sobolev.bank_card_app_alfa_25.domain.entitites.BinInfo
 import androidx.core.net.toUri
+import kotlinx.coroutines.launch
 
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BinInfoScreen(
     viewModel: BinInfoViewModel = hiltViewModel(),
     navigateToHistory: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
     var binInput by remember { mutableStateOf("") }
 
@@ -45,56 +63,94 @@ fun BinInfoScreen(
         viewModel.loadHistory()
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        OutlinedTextField(
-            value = binInput,
-            onValueChange = { binInput = it },
-            label = { Text("Введите BIN") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Button(
-            onClick = { viewModel.onSearch(binInput) },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = binInput.length in 6..8 && !state.isLoading
-        ) {
-            Text("Поиск")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (state.isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-        }
-
+    LaunchedEffect(state.error) {
         state.error?.let { error ->
-            Text(
-                text = error,
-                color = Color.Red,
-                modifier = Modifier.padding(top = 8.dp)
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(
+                    message = error,
+                    actionLabel = "OK"
+                )
+            }
+        }
+    }
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "BIN Info",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 24.dp)
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
+                )
             )
-        }
+        },
+        bottomBar = {
+            Button(
+                onClick = navigateToHistory,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text("Query History")
+            }
+        },
+        containerColor = Color.White
+    ) { innerPadding ->
 
-        state.binInfo?.let { info ->
-            BinInfoCard(info)
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Button(
-            onClick = navigateToHistory,
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp)
+                .fillMaxSize()
         ) {
-            Text("История запросов")
+            OutlinedTextField(
+                value = binInput,
+                onValueChange = { newValue ->
+                    val digitsOnly = newValue.filter { it.isDigit() }.take(8)
+                    binInput = digitsOnly.chunked(4).joinToString(" ")
+                },
+                label = { Text("Input BIN") },
+                placeholder = { Text("1212 1212") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(
+                onClick = { viewModel.onSearch(binInput.replace(" ", "")) },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = binInput.replace(" ", "").length == 8 && !state.isLoading
+            ) {
+                Text("Search")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (state.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = 24.dp)
+                )
+            }
+
+            state.binInfo?.let { info ->
+                BinInfoCard(info = info)
+            }
         }
     }
 }
+
 
 @Composable
 fun BinInfoCard(info: BinInfo) {
@@ -106,29 +162,35 @@ fun BinInfoCard(info: BinInfo) {
             .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
             .padding(16.dp)
     ) {
-        Text("Страна: ${info.country?.name}")
+        info.country?.let { country ->
+            Text("Country: ${country.name}")
 
-        Text(
-            text = "Координаты: ${info.country?.longitude}, ${info.country?.latitude}",
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.clickable {
-                val uri = "geo:${info.country?.latitude},${info.country?.longitude}".toUri()
-                val intent = Intent(Intent.ACTION_VIEW, uri)
-                context.startActivity(intent)
-            },
-            style = MaterialTheme.typography.bodyMedium
-        )
+            country.latitude?.let { lat ->
+                country.longitude?.let { lon ->
+                    Text(
+                        text = "Coordinates: $lon, $lat",
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.clickable {
+                            val uri = "geo:$lat,$lon".toUri()
+                            val intent = Intent(Intent.ACTION_VIEW, uri)
+                            context.startActivity(intent)
+                        },
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+        }
 
-        Text("Тип карты: ${info.scheme?.uppercase()} / ${info.type ?: "N/A"} / ${info.brand ?: "N/A"}")
-        Text("Банк: ${info.bank?.name} (${info.bank?.city})")
+        Text("Card: ${info.scheme?.uppercase() ?: "Unknown"} / ${info.type ?: "Unknown"} / ${info.brand ?: "Unknown"}")
+        Text("Bank: ${info.bank?.name ?: "Unknown"}")
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        info.bank?.url?.let { url ->
+        info.bank?.url?.takeIf { it.isNotBlank() }?.let { url ->
             Text(
-                text = "Сайт: $url",
+                text = "Website: $url",
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable {
                     val intent = Intent(Intent.ACTION_VIEW, "https://$url".toUri())
@@ -138,9 +200,9 @@ fun BinInfoCard(info: BinInfo) {
             )
         }
 
-        info.bank?.phone?.let { phone ->
+        info.bank?.phone?.takeIf { it.isNotBlank() }?.let { phone ->
             Text(
-                text = "Телефон: $phone",
+                text = "Phone: $phone",
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable {
                     val intent = Intent(Intent.ACTION_DIAL, "tel:$phone".toUri())
@@ -151,6 +213,7 @@ fun BinInfoCard(info: BinInfo) {
         }
     }
 }
+
 
 
 
