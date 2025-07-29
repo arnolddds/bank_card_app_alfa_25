@@ -125,6 +125,8 @@ fun BinInfoScreen(
             }
 
 
+
+
             if (state.error != null && !state.isLoading) {
                 Text(
                     text = state.error ?: "",
@@ -136,9 +138,19 @@ fun BinInfoScreen(
                 )
             }
 
-
             state.binInfo?.let { info ->
-                BinInfoCard(info = info)
+                if (info.isMostlyEmpty()) {
+                    Text(
+                        text = stringResource(R.string.card_not_found),
+                        color = Color.Red,
+                        fontSize = 16.sp,
+                        modifier = Modifier
+                            .padding(top = 16.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
+                } else {
+                    BinInfoCard(info = info)
+                }
             }
         }
     }
@@ -207,6 +219,14 @@ fun BinInfoCard(info: BinInfo) {
         }
     }
 }
+fun BinInfo.isMostlyEmpty(): Boolean {
+    return scheme.isNullOrBlank()
+            && type.isNullOrBlank()
+            && brand.isNullOrBlank()
+            && (bank?.name.isNullOrBlank() && bank?.url.isNullOrBlank() && bank?.phone.isNullOrBlank())
+            && (country?.name.isNullOrBlank() && country?.latitude == null && country?.longitude == null)
+}
+
 
 
 

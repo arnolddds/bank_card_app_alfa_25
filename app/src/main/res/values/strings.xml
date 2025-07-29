@@ -10,6 +10,8 @@
     <string name="bin_info">BIN INFO</string>
     <string name="input_bin">Input BIN</string>
     <string name="search">Search</string>
+    <string name="card_not_found">Card is not found</string>
+
 
     <string name="country">Country: %1$s</string>
     <string name="coordinates">Coordinates: %1$s, %2$s</string>
