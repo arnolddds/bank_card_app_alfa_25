@@ -1,7 +1,6 @@
 package com.sobolev.bank_card_app_alfa_25.presentation.ui.screens.main
 
 import android.content.Intent
-import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -18,8 +17,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -29,7 +26,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,10 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.sobolev.bank_card_app_alfa_25.domain.entitites.BinInfo
-import kotlinx.coroutines.launch
 import com.sobolev.bank_card_app_alfa_25.R
-
+import com.sobolev.bank_card_app_alfa_25.domain.entitites.BinInfo
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,28 +49,13 @@ fun BinInfoScreen(
     navigateToHistory: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
-
     var binInput by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         viewModel.loadHistory()
     }
 
-    LaunchedEffect(state.error) {
-        state.error?.let { error ->
-            coroutineScope.launch {
-                snackbarHostState.showSnackbar(
-                    message = error,
-                    actionLabel = "OK"
-                )
-            }
-        }
-    }
-
     Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {
@@ -84,7 +63,7 @@ fun BinInfoScreen(
                         text = stringResource(R.string.bin_info),
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 24.dp)
+                        modifier = Modifier.padding(horizontal = 12.dp)
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -100,7 +79,7 @@ fun BinInfoScreen(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                stringResource(R.string.query_history)
+                Text(stringResource(R.string.query_history))
             }
         },
         containerColor = Color.White
@@ -117,13 +96,13 @@ fun BinInfoScreen(
                 onValueChange = { newValue ->
                     val digitsOnly = newValue.filter { it.isDigit() }.take(8)
                     binInput = digitsOnly.chunked(4).joinToString(" ")
+                    viewModel.clearError()
                 },
                 label = { Text(stringResource(R.string.input_bin)) },
                 placeholder = { Text("1212 1212") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
             )
-
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -145,12 +124,26 @@ fun BinInfoScreen(
                 )
             }
 
+
+            if (state.error != null && !state.isLoading) {
+                Text(
+                    text = state.error ?: "",
+                    color = Color.Red,
+                    fontSize = 16.sp,
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
+            }
+
+
             state.binInfo?.let { info ->
                 BinInfoCard(info = info)
             }
         }
     }
 }
+
 
 
 @Composable

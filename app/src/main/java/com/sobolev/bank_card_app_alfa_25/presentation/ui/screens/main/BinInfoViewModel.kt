@@ -53,6 +53,10 @@ class BinInfoViewModel @Inject constructor(
             }
         }
     }
+    fun clearError() {
+        _state.update { it.copy(error = null) }
+    }
+
 
     fun loadHistory() {
         viewModelScope.launch {

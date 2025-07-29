@@ -55,16 +55,6 @@ fun HistoryScreen(
         viewModel.loadHistory()
     }
 
-    LaunchedEffect(state.error) {
-        state.error?.let { message ->
-            coroutineScope.launch {
-                snackbarHostState.showSnackbar(
-                    message = message,
-                    actionLabel = "ОК"
-                )
-            }
-        }
-    }
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
