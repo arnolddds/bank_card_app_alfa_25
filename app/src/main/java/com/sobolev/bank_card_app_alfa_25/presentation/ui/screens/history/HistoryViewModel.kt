@@ -3,6 +3,7 @@ package com.sobolev.bank_card_app_alfa_25.presentation.ui.screens.history
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sobolev.bank_card_app_alfa_25.domain.entitites.BinInfo
+import com.sobolev.bank_card_app_alfa_25.domain.usecases.ClearHistoryUseCase
 import com.sobolev.bank_card_app_alfa_25.domain.usecases.GetSearchHistoryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
     private val getSearchHistoryUseCase: GetSearchHistoryUseCase,
+    private val clearHistoryUseCase: ClearHistoryUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HistoryScreenState())
@@ -47,6 +49,18 @@ class HistoryViewModel @Inject constructor(
                 }
         }
     }
+
+    fun clearHistory() {
+        viewModelScope.launch {
+            try {
+                clearHistoryUseCase()
+                _state.update { it.copy(history = emptyList()) }
+            } catch (e: Exception) {
+                _state.update { it.copy(error = e.message) }
+            }
+        }
+    }
+
 }
 
 data class HistoryScreenState(

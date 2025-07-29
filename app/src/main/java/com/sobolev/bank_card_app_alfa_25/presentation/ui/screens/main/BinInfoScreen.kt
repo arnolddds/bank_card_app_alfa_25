@@ -1,6 +1,7 @@
 package com.sobolev.bank_card_app_alfa_25.presentation.ui.screens.main
 
 import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -20,8 +21,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -40,11 +39,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sobolev.bank_card_app_alfa_25.domain.entitites.BinInfo
-import androidx.core.net.toUri
 import kotlinx.coroutines.launch
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -188,7 +186,7 @@ fun BinInfoCard(info: BinInfo) {
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        info.bank?.url?.takeIf { it.isNotBlank() }?.let { url ->
+        info.bank?.url?.let { url ->
             Text(
                 text = "Website: $url",
                 color = MaterialTheme.colorScheme.primary,
@@ -199,8 +197,10 @@ fun BinInfoCard(info: BinInfo) {
                 style = MaterialTheme.typography.bodyMedium
             )
         }
+        Log.d("BinInfoCard", "Bank phone: ${info.bank?.phone}")
 
-        info.bank?.phone?.takeIf { it.isNotBlank() }?.let { phone ->
+
+        info.bank?.phone?.let { phone ->
             Text(
                 text = "Phone: $phone",
                 color = MaterialTheme.colorScheme.primary,

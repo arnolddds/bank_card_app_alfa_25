@@ -10,10 +10,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -97,15 +99,30 @@ fun HistoryScreen(
                 .padding(16.dp)
                 .fillMaxSize()
         ) {
-            if (state.history.isEmpty()) {
+            if (state.isLoading) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+            } else if (state.history.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     Text(
                         text = "History is clear",
                         style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.align(Alignment.Center)
+                        modifier = Modifier.align(Alignment.Center),
+                        fontSize = 24.sp
                     )
                 }
-            } else {
+            }
+            else {
+                OutlinedButton(
+                    onClick = { viewModel.clearHistory() },
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(bottom = 12.dp)
+                ) {
+                    Text("Clear History")
+                }
+
                 LazyColumn {
                     items(state.history) { binInfo ->
                         BinInfoCard(info = binInfo)
@@ -114,6 +131,7 @@ fun HistoryScreen(
                 }
             }
         }
+
     }
 }
 

@@ -15,4 +15,8 @@ interface BinInfoDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(binInfo: BinInfoEntity)
+
+    @Query("DELETE FROM bin_info")
+    suspend fun clearHistory()
+
 }
