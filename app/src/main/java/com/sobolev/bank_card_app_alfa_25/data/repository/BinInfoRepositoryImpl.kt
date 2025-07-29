@@ -17,10 +17,9 @@ class BinInfoRepositoryImpl @Inject constructor(
 
     override suspend fun getBinInfo(bin: String): BinInfo {
         val response = apiService.getBinInfo(bin)
-        val domainModel = response.toDomain()
-        binInfoDao.insert(domainModel.toEntity(bin))
-        return domainModel
+        return response.toDomain()
     }
+
 
     override fun getSearchHistory(): Flow<List<BinInfo>> {
         return binInfoDao.getAll().map { list -> list.map { it.toDomain() } }
@@ -28,5 +27,9 @@ class BinInfoRepositoryImpl @Inject constructor(
 
     override suspend fun saveBinInfoToHistory(binInfo: BinInfo) {
         binInfoDao.insert(binInfo.toEntity(bin = binInfo.scheme ?: System.currentTimeMillis().toString()))
+    }
+
+    override suspend fun clearHistory() {
+        binInfoDao.clearHistory()
     }
 }

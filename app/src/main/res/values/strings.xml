@@ -1,3 +1,20 @@
 <resources>
-    <string name="app_name">bank_card_app_alfa_25</string>
+    <string name="app_name">BIN Info</string>
+
+
+    <string name="query_history">Query history</string>
+    <string name="back">Back</string>
+    <string name="history_is_clear">History is clear</string>
+    <string name="clear_history">Clear History</string>
+    <string name="ok">ОК</string>
+    <string name="bin_info">BIN INFO</string>
+    <string name="input_bin">Input BIN</string>
+    <string name="search">Search</string>
+
+    <string name="country">Country: %1$s</string>
+    <string name="coordinates">Coordinates: %1$s, %2$s</string>
+    <string name="card_info">Card: %1$s / %2$s / %3$s</string>
+    <string name="bank">Bank: %1$s</string>
+    <string name="website">Website: %1$s</string>
+    <string name="phone">Phone: %1$s</string>
 </resources>

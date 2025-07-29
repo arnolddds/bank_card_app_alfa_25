@@ -11,4 +11,7 @@ interface BinInfoRepository {
     fun getSearchHistory(): Flow<List<BinInfo>>
 
     suspend fun saveBinInfoToHistory(binInfo: BinInfo)
+
+    suspend fun clearHistory()
+
 }
