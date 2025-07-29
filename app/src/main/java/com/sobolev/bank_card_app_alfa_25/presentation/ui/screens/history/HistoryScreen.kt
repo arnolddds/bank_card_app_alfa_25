@@ -31,10 +31,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.sobolev.bank_card_app_alfa_25.R
 import com.sobolev.bank_card_app_alfa_25.presentation.ui.screens.main.BinInfoCard
 import kotlinx.coroutines.launch
 
@@ -70,7 +72,7 @@ fun HistoryScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Query history",
+                        text = stringResource(R.string.query_history),
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 24.dp)
@@ -120,7 +122,7 @@ fun HistoryScreen(
                         .align(Alignment.End)
                         .padding(bottom = 12.dp)
                 ) {
-                    Text("Clear History")
+                    Text(stringResource(R.string.clear_history))
                 }
 
                 LazyColumn {

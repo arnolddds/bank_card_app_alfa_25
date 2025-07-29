@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -43,6 +44,8 @@ import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sobolev.bank_card_app_alfa_25.domain.entitites.BinInfo
 import kotlinx.coroutines.launch
+import com.sobolev.bank_card_app_alfa_25.R
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,7 +81,7 @@ fun BinInfoScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "BIN Info",
+                        text = stringResource(R.string.bin_info),
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 24.dp)
@@ -97,7 +100,7 @@ fun BinInfoScreen(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Text("Query History")
+                stringResource(R.string.query_history)
             }
         },
         containerColor = Color.White
@@ -115,7 +118,7 @@ fun BinInfoScreen(
                     val digitsOnly = newValue.filter { it.isDigit() }.take(8)
                     binInput = digitsOnly.chunked(4).joinToString(" ")
                 },
-                label = { Text("Input BIN") },
+                label = { Text(stringResource(R.string.input_bin)) },
                 placeholder = { Text("1212 1212") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
@@ -129,7 +132,7 @@ fun BinInfoScreen(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = binInput.replace(" ", "").length == 8 && !state.isLoading
             ) {
-                Text("Search")
+                Text(stringResource(R.string.search))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -197,8 +200,6 @@ fun BinInfoCard(info: BinInfo) {
                 style = MaterialTheme.typography.bodyMedium
             )
         }
-        Log.d("BinInfoCard", "Bank phone: ${info.bank?.phone}")
-
 
         info.bank?.phone?.let { phone ->
             Text(
